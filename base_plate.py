@@ -1,98 +1,56 @@
-"""
-Base Plate for Drone Payload Mounting
-=====================================
-Simple circular plate with M6 holes on 25mm grid.
-"""
+"""Base plate with M6 mounting holes on 25mm grid."""
 
 from build123d import *
 from ocp_vscode import show
 
-# ============================================================
-# Parameters (all dimensions in mm)
-# ============================================================
-
-# Plate dimensions
-PLATE_DIAMETER = 149.0
-PLATE_THICKNESS = 6.0
-
-# Grid pattern
+# Parameters
+DIAMETER = 149.0
+THICKNESS = 6.0
 GRID_SPACING = 25.0
 EDGE_MARGIN = 12.5
+M6_TAP_DIA = 5.0
 
-# M6 tapped holes
-M6_TAP_DIAMETER = 5.0  # Pilot hole for M6x1.0 tap
 
-# ============================================================
-# Calculate hole positions
-# ============================================================
-
-def get_grid_positions(diameter, spacing, margin):
-    """Calculate positions for a circular grid pattern."""
-    max_radius = diameter / 2 - margin
+def grid_positions(diameter, spacing, margin):
+    """Generate positions for circular grid pattern."""
+    max_r = diameter / 2 - margin
+    extent = int(max_r / spacing) + 1
     positions = []
-
-    max_extent = int(max_radius / spacing) + 1
-
-    for i in range(-max_extent, max_extent + 1):
-        for j in range(-max_extent, max_extent + 1):
-            x = i * spacing
-            y = j * spacing
-            radius = (x**2 + y**2)**0.5
-
-            if radius <= max_radius:
+    for i in range(-extent, extent + 1):
+        for j in range(-extent, extent + 1):
+            x, y = i * spacing, j * spacing
+            if (x**2 + y**2) ** 0.5 <= max_r:
                 positions.append((x, y))
-
     return positions
 
-hole_positions = get_grid_positions(PLATE_DIAMETER, GRID_SPACING, EDGE_MARGIN)
 
-print(f"M6 holes: {len(hole_positions)} places")
+holes = grid_positions(DIAMETER, GRID_SPACING, EDGE_MARGIN)
 
-# ============================================================
-# Build the base plate
-# ============================================================
-
-with BuildPart() as base_plate:
-    # Main circular plate
+with BuildPart() as model:
     with BuildSketch():
-        Circle(PLATE_DIAMETER / 2)
-    extrude(amount=PLATE_THICKNESS)
+        Circle(DIAMETER / 2)
+    extrude(amount=THICKNESS)
 
-    top_face = base_plate.faces().sort_by(Axis.Z)[-1]
-
-    # Create M6 tapped holes
-    with BuildSketch(top_face):
-        for x, y in hole_positions:
+    with BuildSketch(model.faces().sort_by(Axis.Z)[-1]):
+        for x, y in holes:
             with Locations([(x, y)]):
-                Circle(M6_TAP_DIAMETER / 2)
+                Circle(M6_TAP_DIA / 2)
+    extrude(amount=-THICKNESS, mode=Mode.SUBTRACT)
 
-    extrude(amount=-PLATE_THICKNESS, mode=Mode.SUBTRACT)
+    for face in [model.faces().sort_by(Axis.Z)[-1], model.faces().sort_by(Axis.Z)[0]]:
+        chamfer(face.outer_wire().edges(), length=0.8)
 
-    # Chamfer outer edges
-    top_face = base_plate.faces().sort_by(Axis.Z)[-1]
-    bottom_face = base_plate.faces().sort_by(Axis.Z)[0]
-    chamfer(top_face.outer_wire().edges(), length=0.8)
-    chamfer(bottom_face.outer_wire().edges(), length=0.8)
+part = model.part
 
-# ============================================================
-# Output
-# ============================================================
+if __name__ == "__main__":
+    print(f"Base plate: Ø{DIAMETER}mm, {len(holes)} M6 holes")
 
-part = base_plate.part
+    try:
+        show(part)
+    except Exception:
+        pass
 
-print("=" * 50)
-print(f"Diameter: Ø{PLATE_DIAMETER} mm")
-print(f"Grid spacing: {GRID_SPACING} mm")
-print(f"M6 holes: {len(hole_positions)} places")
-print("=" * 50)
-
-try:
-    show(part)
-except Exception as e:
-    print(f"\nViewer not available: {e}")
-
-from build123d import export_step, export_stl, export_brep
-export_step(part, "base_plate.step")
-export_stl(part, "base_plate.stl")
-export_brep(part, "base_plate.brep")
-print("\nExported to: base_plate.step, base_plate.stl, base_plate.brep")
+    export_step(part, "exports/base_plate.step")
+    export_stl(part, "exports/base_plate.stl")
+    export_brep(part, "exports/base_plate.brep")
+    print("Exported to exports/")

@@ -1,0 +1,10 @@
+# Generated CAD exports
+exports/
+*.step
+*.stl
+*.brep
+
+# Python
+__pycache__/
+*.pyc
+.nox/

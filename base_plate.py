@@ -18,3 +18,4 @@ part = p.part
 if __name__ == "__main__":
     export_step(part, "exports/base_plate.step")
     export_stl(part, "exports/base_plate.stl")
+    export_brep(part, "exports/base_plate.brep")

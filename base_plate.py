@@ -15,5 +15,7 @@ with BuildPart() as p:
 part = p.part
 
 if __name__ == "__main__":
+    from ocp_vscode import show
+    show(part)
     for fmt in [export_step, export_stl, export_brep]:
         fmt(part, f"exports/base_plate.{fmt.__name__.split('_')[1]}")

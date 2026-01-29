@@ -7,4 +7,5 @@ exports/
 # Python
 __pycache__/
 *.pyc
-.nox/
+.venv/
+uv.lock

@@ -1,9 +1,15 @@
 # build123d Examples
 
+## Setup
+
+```bash
+uv sync
+```
+
 ## Usage
 
 ```bash
-uv run --with build123d python base_plate.py
+uv run python base_plate.py
 ```
 
 Exports to `exports/`.
@@ -15,9 +21,8 @@ Exports to `exports/`.
    code --install-extension bernhard-42.ocp-cad-viewer
    ```
 
-2. Open viewer: `Ctrl+Shift+P` → "OCP CAD Viewer: Open Viewer"
+2. Select interpreter: `Ctrl+Shift+P` → "Python: Select Interpreter" → `.venv`
 
-3. Run with viewer support
-   ```bash
-   uv run --with build123d --with ocp-vscode python base_plate.py
-   ```
+3. Open viewer: `Ctrl+Shift+P` → "OCP CAD Viewer: Open Viewer"
+
+4. Run script in VS Code or terminal

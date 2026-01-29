@@ -1,11 +1,6 @@
-# Generated CAD exports
+# Exports
 exports/
-*.step
-*.stl
-*.brep
 
 # Python
 __pycache__/
-*.pyc
 .venv/
-uv.lock

@@ -1,7 +1,7 @@
 from build123d import *
 
 D, T, G, M = 149, 6, 25, 12.5
-r = D / 2 - M
+r = D/2 - M
 holes = [(i*G, j*G) for i in range(-3, 4) for j in range(-3, 4) if (i*G)**2 + (j*G)**2 <= r**2]
 
 with BuildPart() as p:
@@ -17,5 +17,6 @@ part = p.part
 if __name__ == "__main__":
     from ocp_vscode import show
     show(part)
-    for fmt in [export_step, export_stl, export_brep]:
-        fmt(part, f"exports/base_plate.{fmt.__name__.split('_')[1]}")
+    export_step(part, "exports/base_plate.step")
+    export_stl(part, "exports/base_plate.stl")
+    export_brep(part, "exports/base_plate.brep")
